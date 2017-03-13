@@ -1,26 +1,34 @@
 <!--
-Mobile Web App Prototype
-Created by: David Wagner 1/31/2017
-Finished: 2/7/2017
-PROG3180-Sec2 Assignment1
+Feedback App
+Created by: David Wagner 2/21/2017
+Finished: David Wagner 3/11/2017
+PROG3180-Sec2 Assignment2
 -->
 
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>DW Feedback A1</title>
+    <title>DW Feedback A2</title>
     <!--        Meta data   -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <!--        JQuery      -->
     <script src="js/lib/jquery-2.1.4.js"></script>
+    <script src="js/lib/jquery.validate.js"></script>
+
     <!--        JQeuery Mobile      -->
     <script src="js/lib/jquery.mobile-1.4.5.js"></script>
+    <!-- Javascript files -->
+    <script src="js/DWdatabase.js"></script>
+    <script src="js/DWfeedbackDAL.js"></script>
+    <script src="js/DWglobal.js"></script>
+    <script src="js/DWutil.js"></script>
 
     <!--        Style sheet         -->
+
     <link rel="stylesheet" type="text/css" href="css/lib/jquery.mobile-1.4.5.css">
     <link rel="stylesheet" href="css/custom.css" />
     <link rel="stylesheet" href="css/jquery.mobile.icons.min.css" />
-
+    <link rel="stylesheet" href="css/DWmystyle.css" />
     <link rel="shortcut icon" href="images/DW-icon.png">
 
 
@@ -29,20 +37,20 @@ PROG3180-Sec2 Assignment1
 <!--page 1 HOMEPAGE-->
 <div id="DWHomePage" data-role="page" >
     <header data-role="header" data-position="fixed" >
-        <div data-role="header" data-theme="b"><h1>A1 Feedback</h1></div>
+        <div data-role="header" data-theme="b"><h1>A2 Feedback</h1></div>
         <div data-role="navbar">
             <ul >
-                <li><a href="#D WHomePage"  data-icon="home"  class="ui-btn-active ui-state-persist">Home</a></li>
-                <li><a href="#DWAddFeedBackPage" data-icon="plus" >Add</a></li>
-                <li><a href="#DWViewFeedbackPage" data-icon="grid">Reviews</a></li>
+                <li><a href="#DWHomePage"  data-icon="home"  class="ui-btn-active ui-state-persist">Home</a></li>
+                <li><a href="#DWAddFeedBackPage" id="FeedBackPageLink1"  data-icon="plus" >Add</a></li>
+                <li><a href="#DWViewFeedbackPage" id="FeedBackPageLink2"    data-icon="grid">Reviews</a></li>
                 <li><a href="#DWSettingsPage" data-icon="gear">Settings</a></li>
             </ul>
         </div>
     </header>
     <section data-role="content">
-        <h1>David Wagner's Feedback A1 App</h1>
-        <p>Welcome to David Wagner's Feedback A1 app. A prototype designed for a mobile programming class.
-        This is the first iteration of the app to keep track of different places you visited along with your
+        <h1>David Wagner's Feedback A2 App</h1>
+        <p>Welcome to David Wagner's Feedback A2 app. A prototype designed for a mobile programming class.
+        This is the second iteration of the app to keep track of different places you visited along with your
         reviews.</p>
         <img src="images/DW-icon.png" alt="DW App Icon">
         <p>Contact me if you have any suggestions!</p>
@@ -91,19 +99,53 @@ PROG3180-Sec2 Assignment1
         <form id="DWAddForm" >
 
             <label for="DWBusName">Business Name:</label>
-            <input type="text" name="BusName" id="DWBusName" value="">
+            <input type="text" name="DWBusName" id="DWBusName" value="">
+
+            <label for="DWType">Type:</label>
+            <select name="DWType" id="DWType">
+                <option value="1">Other</option>
+                <option value="2">Restaurant</option>
+                <option value="3">Retail</option>
+                <option value="4">Fast Food</option>
+                <option value="3">Service</option>
+                <option value="4">IT</option>
+            </select>
 
             <label for="DWRevEmail">Reviewer Email:</label>
-            <input type="text" name="RevEmail" id="DWRevEmail" value="">
+            <input type="text" name="DWRevEmail" id="DWRevEmail" value="">
 
             <label for="DWRevComment">Reviewer Comments:</label>
-            <textarea name="RevComment" id="DWRevComment"></textarea>
+            <textarea name="DWRevComment" id="DWRevComment"></textarea>
 
-            <label for="DWOverallRating">Overall Rating (1-100):</label>
-            <input type="number" name="OveralRating" id="DWOverallRating" value="">
+            <label for="DWReviewDate">Review Date:</label>
+            <input type="date" name="DWReviewDate" id="DWReviewDate" value="mm/dd/yyyy">
+
+            <label for="DWAddRating">Do you want to add your ratings?</label>
+            <input type="checkbox" name="DWAddRating" id="DWAddRating" class="DWAddRating">
 
 
-            <input type="submit" name="Save" id="DWSave" value="Save" data-theme="d" >
+            <div id="DWRatingsDiv" class="DWRatingsDiv">
+                <label for="DWFoodQ">Food Quality (0-5):</label>
+                <input onblur="ratingCalc()" type="number" name="DWFoodQ" id="DWFoodQ">
+
+                <label for="DWService">Service (0-5):</label>
+                <input  onblur="ratingCalc()" type="number" name="DWService" id="DWService">
+
+                <label for="DWValue">Value (0-5):</label>
+                <input  onblur="ratingCalc()" type="number" name="DWValue" id="DWValue">
+
+                <label for="DWOverallRating">Overall Rating (calculated):</label>
+                <input type="text" name="OveralRating" id="DWOverallRating" value="0" disabled>
+
+            </div>
+
+
+
+
+
+
+
+            <input type="submit" name="Save" id="DWSave" value="Save" data-theme="d" data-inline="true" >
 
 
         </form>
@@ -135,11 +177,11 @@ PROG3180-Sec2 Assignment1
             <a href="#DWEditFeedbackPage" data-role = "button">
 
                 <li>
-                    <h1 class="smallFont">Business Name:  <span class="title">420st Burger</span></h1>
+                    <h1 class="smallFont">Business Name:  <span class="title">Good Burger</span></h1>
                     <p>
                         <span class="smallFont">Reviewer Email:</span>
 
-                        <span class = "smallerFont"> cheechnchong@gmail.com</span>
+                        <span class = "smallerFont"> jayz@gmail.com</span>
                     </p>
                     <p>
                         <span class="smallFont">Comments:</span>
@@ -199,16 +241,48 @@ PROG3180-Sec2 Assignment1
         <form id="DWEditFeedbackForm" >
 
             <label for="DWBusNameEdit">Business Name:</label>
-            <input type="text" name="BusName" id="DWBusNameEdit" value="">
+            <input type="text" name="DWBusNameEdit" id="DWBusNameEdit" value="">
+
+            <label for="DWTypeEdit">Type:</label>
+            <select name="DWTypeEdit" id="DWTypeEdit">
+                <option value="1">Other</option>
+                <option value="2">Restaurant</option>
+                <option value="3">Retail</option>
+                <option value="4">Fast Food</option>
+                <option value="3">Service</option>
+                <option value="4">IT</option>
+            </select>
 
             <label for="DWRevEmailEdit">Reviewer Email:</label>
-            <input type="text" name="RevEmail" id="DWRevEmailEdit" value="">
+            <input type="text" name="DWRevEmailEdit" id="DWRevEmailEdit" value="">
 
             <label for="DWRevCommentEdit">Reviewer Comments:</label>
-            <textarea name="RevComment" id="DWRevCommentEdit"></textarea>
+            <textarea name="DWRevCommentEdit"Edit id="DWRevCommentEdit"></textarea>
 
-            <label for="DWOverallRatingEdit">Overall Rating (1-100):</label>
-            <input type="number" name="OveralRating" id="DWOverallRatingEdit" value="">
+            <label for="DWReviewDateEdit">Review Date:</label>
+            <input type="date" name="DWReviewDateEdit" id="DWReviewDateEdit" value="mm/dd/yyyy">
+
+            <label for="DWAddRatingEdit">Do you want to add your ratings?</label>
+            <input type="checkbox" name="DWAddRatingEdit" id="DWAddRatingEdit" class="DWAddRating">
+
+
+            <div id="DWRatingsDivEdit" class="DWRatingsDiv">
+                <label for="DWFoodQ">Food Quality (0-5):</label>
+                <input onblur="ratingCalcEdit()" type="number" name="DWFoodQEdit" id="DWFoodQEdit">
+
+                <label for="DWServiceEdit">Service (0-5):</label>
+                <input onblur="ratingCalcEdit()" type="number" name="DWServiceEdit" id="DWServiceEdit">
+
+                <label for="DWValueEdit">Value (0-5):</label>
+                <input onblur="ratingCalcEdit()" type="number" name="DWValueEdit" id="DWValueEdit">
+
+                <label for="DWOverallRatingEdit">Overall Rating (calculated):</label>
+                <input type="text" name="DWOveralRatingEdit" id="DWOverallRatingEdit" value="" disabled>
+
+
+            </div>
+
+
 
 
             <fieldset data-role="controlgroup" data-type="horizontal" >
@@ -241,12 +315,12 @@ PROG3180-Sec2 Assignment1
         </div>
     </header>
     <section data-role="content">
-        <form id="DWSettingsForm">
+        <form id="DWSettingsForm" >
 
             <label for="DWDefaultRevEmail">Default Reviewer Email:</label>
             <input type="text" name="DefaultEmail" id="DWDefaultRevEmail" value="">
             <input type = "submit"  value="Save Defaults" data-theme="d"   id="DWSaveDefault"/>
-            <input type = "button" value="Delete" data-theme="b"  id="DWClearDB"/>
+            <input type = "button" value="Clear Database" data-theme="b"  id="DWClearDB"/>
 
 
 
